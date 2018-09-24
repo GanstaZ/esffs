@@ -1,0 +1,10 @@
+services:
+    ganstaz.esffs.listener:
+        class: ganstaz\esffs\event\listener
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@language'
+            - '@template'
+        tags:
+            - { name: event.listener }

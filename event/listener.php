@@ -1,7 +1,7 @@
 <?php
 /**
 *
-* DLS MS. An extension for the phpBB Forum Software package.
+* GanstaZ ESFFS. An extension for the phpBB Forum Software package.
 *
 * @copyright (c) 2018, GanstaZ, http://www.dlsz.eu/
 * @license GNU General Public License, version 2 (GPL-2.0)
@@ -17,7 +17,7 @@ use phpbb\template\template;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
-* DLS Web Event listener
+* GanstaZ ESFFS Event listener
 */
 class listener implements EventSubscriberInterface
 {
@@ -70,29 +70,25 @@ class listener implements EventSubscriberInterface
 	{
 		$sql = 'SELECT forum_id, forum_posts_approved, forum_topics_approved
 				FROM ' . FORUMS_TABLE . '
-				WHERE ' . $this->db->sql_in_set('forum_id', [2, 3]);
+				WHERE ' . $this->db->sql_in_set('forum_id', [2, 4]);
 		$result = $this->db->sql_query($sql);
 
-		$test = [];
-		$hidden_posts  = 0;
-		$hidden_topics = 0;
+		$hidden = [
+			'posts'	 => (int) $this->config['num_posts'],
+			'topics' => (int) $this->config['num_topics'],
+		];
+
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$test[(int) $row['forum_id']] = $row;
-
-			$hidden_posts  += (int) $row['forum_posts_approved'];
-			$hidden_topics += (int) $row['forum_topics_approved'];
+			$hidden['posts']  -= (int) $row['forum_posts_approved'];
+			$hidden['topics'] -= (int) $row['forum_topics_approved'];
 		}
 		$this->db->sql_freeresult($result);
 
-echo '<pre>';
-		var_dump($test);
-echo '</pre><br />';
-
 		// Assign index specific vars
-		//$this->template->assign_vars([
-			//'TOTAL_POSTS'  => $this->language->lang('TOTAL_POSTS_COUNT', (int) $this->config['num_posts'] - $hidden_posts),
-			//'TOTAL_TOPICS' => $this->language->lang('TOTAL_TOPICS', (int) $this->config['num_topics'] - $hidden_topics),
-		//]);
+		$this->template->assign_vars([
+			'TOTAL_POSTS'  => $this->language->lang('TOTAL_POSTS_COUNT', $hidden['posts']),
+			'TOTAL_TOPICS' => $this->language->lang('TOTAL_TOPICS', $hidden['topics']),
+		]);
 	}
 }

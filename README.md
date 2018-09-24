@@ -13,7 +13,3 @@ Go to admin panel -> tab customise -> Manage extensions -> enable Modify statist
 
 ### 3. disable
 Go to admin panel -> tab customise -> Manage extensions -> disable Modify statistics
-
-## LICENSE
-
-GNU General Public License v2. A copy has been included in the package (license.txt).

@@ -12,19 +12,28 @@ namespace ganstaz\esffs\migrations;
 
 class esffs_main extends \phpbb\db\migration\migration
 {
-    public function update_data()
-    {
-        return array(
-            // Add the config variables we want to be able to set
-			['config.add', ['esffs_exclude_ids', '']],
-        );
-    }
+	/**
+	* If our config variable already exists in the db
+	* skip this migration.
+	*/
+	public function effectively_installed()
+	{
+		return isset($this->config['esffs_exclude_ids']);
+	}
 
-    public function revert_schema()
-    {
-        return array(
-            // Remove the config variables
+	public function update_data()
+	{
+		return array(
+			// Add the config variable we want to be able to set
+			['config.add', ['esffs_exclude_ids', '0']],
+		);
+	}
+
+	public function revert_schema()
+	{
+		return array(
+			// Remove the config variable
 			['config.remove', ['esffs_exclude_ids']],
-        );
-    }
+		);
+	}
 }

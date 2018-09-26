@@ -25,7 +25,7 @@ class esffs_main extends \phpbb\db\migration\migration
 	{
 		return array(
 			// Add the config variable we want to be able to set
-			['config.add', ['esffs_exclude_ids', '0']],
+			['config.add', ['esffs_exclude_ids', '']],
 		);
 	}
 

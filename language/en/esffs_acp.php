@@ -20,5 +20,5 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, [
 	'ESFFS_EXCLUDE_IDS'			=> 'Exclude forums from stats',
-	'ESFFS_EXCLUDE_IDS_EXPLAIN' => 'Empty field will trigger an error, so default value should be 0! Use comma-separated list to add forum id/s or just change existing one/s.',
+	'ESFFS_EXCLUDE_IDS_EXPLAIN' => 'Use comma-separated list to add forum id/s or just change existing one/s.',
 ]);

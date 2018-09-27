@@ -13,6 +13,7 @@ namespace ganstaz\esffs\event;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\language\language;
+use phpbb\request\request;
 use phpbb\template\template;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -30,6 +31,9 @@ class listener implements EventSubscriberInterface
 	/** @var \phpbb\language\language */
 	protected $language;
 
+	/** @var \phpbb\request\request */
+	protected $request;
+
 	/** @var \phpbb\template\template */
 	protected $template;
 
@@ -39,13 +43,15 @@ class listener implements EventSubscriberInterface
 	* @param \phpbb\config\config			   $config	 Config object
 	* @param \phpbb\db\driver\driver_interface $db		 Db object
 	* @param \phpbb\language\language		   $language Language object
+	* @param \phpbb\request\request			   $request	 Request object
 	* @param \phpbb\template\template		   $template Template object
 	*/
-	public function __construct(config $config, driver_interface $db, language $language, template $template)
+	public function __construct(config $config, driver_interface $db, language $language, request $request, template $template)
 	{
 		$this->config	= $config;
 		$this->db = $db;
 		$this->language = $language;
+		$this->request	= $request;
 		$this->template = $template;
 	}
 
@@ -57,9 +63,51 @@ class listener implements EventSubscriberInterface
 	public static function getSubscribedEvents()
 	{
 		return [
+			'core.acp_manage_forums_request_data'	 => 'esffs_manage_forums_request_data',
+			'core.acp_manage_forums_initialise_data' => 'esffs_manage_forums_initialise_data',
+			'core.acp_manage_forums_display_form'	 => 'esffs_manage_forums_display_form',
 			'core.acp_board_config_edit_add' => 'board_config_add',
-			'core.index_modify_page_title' => 'modify_stats',
+			'core.index_modify_page_title'	 => 'modify_stats',
 		];
+	}
+
+	/**
+	* Event core.acp_manage_forums_request_data
+	*
+	* @param \phpbb\event\data $event The event object
+	*/
+	public function esffs_manage_forums_request_data($event)
+	{
+		$forum_data = $event['forum_data'];
+		$forum_data['esffs_fid_enable'] = $this->request->variable('esffs_fid_enable', 0);
+		$event['forum_data'] = $forum_data;
+	}
+
+	/**
+	* Event core.acp_manage_forums_initialise_data
+	*
+	* @param \phpbb\event\data $event The event object
+	*/
+	public function esffs_manage_forums_initialise_data($event)
+	{
+		if ($event['action'] == 'add')
+		{
+			$forum_data = $event['forum_data'];
+			$forum_data['esffs_fid_enable'] = (bool) false;
+			$event['forum_data'] = $forum_data;
+		}
+	}
+
+	/**
+	* Event core.acp_manage_forums_display_form
+	*
+	* @param \phpbb\event\data $event The event object
+	*/
+	public function esffs_manage_forums_display_form($event)
+	{
+		$template_data = $event['template_data'];
+		$template_data['S_ESFFS_FID'] = $event['forum_data']['esffs_fid_enable'];
+		$event['template_data'] = $template_data;
 	}
 
 	/**
@@ -71,17 +119,20 @@ class listener implements EventSubscriberInterface
 	{
 		if ($event['mode'] === 'settings')
 		{
-			$this->language->add_lang('esffs_acp', 'ganstaz/esffs');
+			$display_vars = $event['display_vars'];
 
-			$set_data = $event['display_vars'];
-
-			$set_data['vars']['esffs_exclude_ids'] = [
-				'lang' => 'ESFFS_EXCLUDE_IDS',
-				'validate' => 'string', 'type' => 'text:40:255',
-				'explain' => true
+			$set_data = [
+				'esffs_enable' => [
+					'lang'	   => 'ESFFS_ENABLE',
+					'validate' => 'bool',
+					'type'	   => 'radio:yes_no',
+					'explain'  => true
+				],
 			];
 
-			$event['display_vars'] = $set_data;
+			$display_vars['vars'] = phpbb_insert_config_array($display_vars['vars'], $set_data, ['after' => 'warnings_expire_days']);
+
+			$event['display_vars'] = $display_vars;
 		}
 	}
 
@@ -92,54 +143,33 @@ class listener implements EventSubscriberInterface
 	*/
 	public function modify_stats($event)
 	{
-		$exc_ops = $this->config['esffs_exclude_ids'];
-
-		// If strings is empty ('' or 0), then stop the process.
-		if (!$exc_ops)
+		// If not enabled, then stop the process.
+		if (!$this->config['esffs_enable'])
 		{
 			return;
 		}
 
-		// Check spaces in a string and remove if any.
-		if (strpos($exc_ops, ' ') !== false)
+		$sql = 'SELECT forum_id, forum_posts_approved, forum_topics_approved, esffs_fid_enable
+				FROM ' . FORUMS_TABLE . '
+				WHERE esffs_fid_enable = 1';
+		$result = $this->db->sql_query($sql);
+
+		$hidden = [
+			'posts'	 => (int) $this->config['num_posts'],
+			'topics' => (int) $this->config['num_topics'],
+		];
+
+		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$exc_ops = str_replace(' ', '', $exc_ops);
+			$hidden['posts']  -= (int) $row['forum_posts_approved'];
+			$hidden['topics'] -= (int) $row['forum_topics_approved'];
 		}
+		$this->db->sql_freeresult($result);
 
-		$exclude_ids_ary = [];
-		// Convert string into an array and assign validated ids into exclude_ids_ary.
-		foreach (explode(',', $exc_ops) as $e_id)
-		{
-			if (ctype_digit($e_id) && $e_id > 1)
-			{
-				$exclude_ids_ary[] = $e_id;
-			}
-		}
-
-		if ($exclude_ids_ary)
-		{
-			$sql = 'SELECT forum_id, forum_posts_approved, forum_topics_approved
-					FROM ' . FORUMS_TABLE . '
-					WHERE ' . $this->db->sql_in_set('forum_id', $exclude_ids_ary);
-			$result = $this->db->sql_query($sql);
-
-			$hidden = [
-				'posts'	 => (int) $this->config['num_posts'],
-				'topics' => (int) $this->config['num_topics'],
-			];
-
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$hidden['posts']  -= (int) $row['forum_posts_approved'];
-				$hidden['topics'] -= (int) $row['forum_topics_approved'];
-			}
-			$this->db->sql_freeresult($result);
-
-			// Update index specific vars
-			$this->template->assign_vars([
-				'TOTAL_POSTS'  => $this->language->lang('TOTAL_POSTS_COUNT', $hidden['posts']),
-				'TOTAL_TOPICS' => $this->language->lang('TOTAL_TOPICS', $hidden['topics']),
-			]);
-		}
+		// Update index specific vars
+		$this->template->assign_vars([
+			'TOTAL_POSTS'  => $this->language->lang('TOTAL_POSTS_COUNT', $hidden['posts']),
+			'TOTAL_TOPICS' => $this->language->lang('TOTAL_TOPICS', $hidden['topics']),
+		]);
 	}
 }

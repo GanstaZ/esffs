@@ -18,22 +18,39 @@ class esffs_main extends \phpbb\db\migration\migration
 	*/
 	public function effectively_installed()
 	{
-		return isset($this->config['esffs_exclude_ids']);
+		return isset($this->config['esffs_enable']);
 	}
 
 	public function update_data()
 	{
-		return array(
+		return [
 			// Add the config variable we want to be able to set
-			['config.add', ['esffs_exclude_ids', '']],
-		);
+			['config.add', ['esffs_enable', 1]],
+		];
+	}
+
+	public function update_schema()
+	{
+		return [
+			'add_columns' => [
+				$this->table_prefix . 'forums' => [
+					'esffs_fid_enable' => ['BOOL', 0],
+				],
+			],
+		];
 	}
 
 	public function revert_schema()
 	{
-		return array(
+		return [
 			// Remove the config variable
-			['config.remove', ['esffs_exclude_ids']],
-		);
+			['config.remove', ['esffs_enable']],
+
+			'drop_columns' => [
+				$this->table_prefix . 'forums' => [
+					'esffs_fid_enable',
+				],
+			],
+		];
 	}
 }

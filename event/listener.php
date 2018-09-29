@@ -66,8 +66,7 @@ class listener implements EventSubscriberInterface
 			'core.acp_manage_forums_request_data'	 => 'esffs_manage_forums_request_data',
 			'core.acp_manage_forums_initialise_data' => 'esffs_manage_forums_initialise_data',
 			'core.acp_manage_forums_display_form'	 => 'esffs_manage_forums_display_form',
-			'core.acp_board_config_edit_add' => 'board_config_add',
-			'core.index_modify_page_title'	 => 'modify_stats',
+			'core.index_modify_page_title' => 'modify_stats',
 		];
 	}
 
@@ -111,44 +110,12 @@ class listener implements EventSubscriberInterface
 	}
 
 	/**
-	* Event core.acp_board_config_edit_add
-	*
-	* @param \phpbb\event\data $event The event object
-	*/
-	public function board_config_add($event)
-	{
-		if ($event['mode'] === 'settings')
-		{
-			$display_vars = $event['display_vars'];
-
-			$set_data = [
-				'esffs_enable' => [
-					'lang'	   => 'ESFFS_ENABLE',
-					'validate' => 'bool',
-					'type'	   => 'radio:yes_no',
-					'explain'  => true
-				],
-			];
-
-			$display_vars['vars'] = phpbb_insert_config_array($display_vars['vars'], $set_data, ['after' => 'warnings_expire_days']);
-
-			$event['display_vars'] = $display_vars;
-		}
-	}
-
-	/**
 	* Event core.index_modify_page_title
 	*
 	* @param \phpbb\event\data $event The event object
 	*/
 	public function modify_stats($event)
 	{
-		// If not enabled, then stop the process.
-		if (!$this->config['esffs_enable'])
-		{
-			return;
-		}
-
 		$sql = 'SELECT forum_id, forum_posts_approved, forum_topics_approved, esffs_fid_enable
 				FROM ' . FORUMS_TABLE . '
 				WHERE esffs_fid_enable = 1';
@@ -165,6 +132,11 @@ class listener implements EventSubscriberInterface
 			$hidden['topics'] -= (int) $row['forum_topics_approved'];
 		}
 		$this->db->sql_freeresult($result);
+
+		if (!$hidden)
+		{
+			return;
+		}
 
 		// Update index specific vars
 		$this->template->assign_vars([

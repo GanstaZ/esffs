@@ -3,7 +3,7 @@
     "type": "phpbb-extension",
     "description": "Exclude specified forum id/s from forum statistics",
     "homepage": "http://www.dlsz.eu/",
-    "version": "1.0.2-RC2",
+    "version": "1.0.3-RC3",
     "time": "2018-09-24",
     "license": "GPL-2.0-only",
     "authors": [

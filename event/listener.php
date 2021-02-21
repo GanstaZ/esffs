@@ -3,7 +3,7 @@
 *
 * GanstaZ ESFFS. An extension for the phpBB Forum Software package.
 *
-* @copyright (c) 2018, GanstaZ, http://www.dlsz.eu/
+* @copyright (c) 2021, GanstaZ, http://www.github.com/GanstaZ/
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
@@ -22,34 +22,34 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 */
 class listener implements EventSubscriberInterface
 {
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var driver_interface */
 	protected $db;
 
-	/** @var \phpbb\language\language */
+	/** @var language */
 	protected $language;
 
-	/** @var \phpbb\request\request */
+	/** @var request */
 	protected $request;
 
-	/** @var \phpbb\template\template */
+	/** @var template */
 	protected $template;
 
 	/**
 	* Constructor
 	*
-	* @param \phpbb\config\config			   $config	 Config object
-	* @param \phpbb\db\driver\driver_interface $db		 Db object
-	* @param \phpbb\language\language		   $language Language object
-	* @param \phpbb\request\request			   $request	 Request object
-	* @param \phpbb\template\template		   $template Template object
+	* @param config			  $config	Config object
+	* @param driver_interface $db		Db object
+	* @param language		  $language Language object
+	* @param request		  $request	Request object
+	* @param template		  $template Template object
 	*/
 	public function __construct(config $config, driver_interface $db, language $language, request $request, template $template)
 	{
 		$this->config	= $config;
-		$this->db = $db;
+		$this->db		= $db;
 		$this->language = $language;
 		$this->request	= $request;
 		$this->template = $template;
@@ -63,10 +63,9 @@ class listener implements EventSubscriberInterface
 	public static function getSubscribedEvents()
 	{
 		return [
-			'core.acp_manage_forums_request_data'	 => 'esffs_manage_forums_request_data',
-			'core.acp_manage_forums_initialise_data' => 'esffs_manage_forums_initialise_data',
-			'core.acp_manage_forums_display_form'	 => 'esffs_manage_forums_display_form',
-			'core.index_modify_page_title' => 'modify_stats',
+			'core.acp_manage_forums_request_data' => 'esffs_manage_forums_request_data',
+			'core.acp_manage_forums_display_form' => 'esffs_manage_forums_display_form',
+			'core.index_modify_page_title'		  => 'modify_stats',
 		];
 	}
 
@@ -80,21 +79,6 @@ class listener implements EventSubscriberInterface
 		$forum_data = $event['forum_data'];
 		$forum_data['esffs_fid_enable'] = $this->request->variable('esffs_fid_enable', 0);
 		$event['forum_data'] = $forum_data;
-	}
-
-	/**
-	* Event core.acp_manage_forums_initialise_data
-	*
-	* @param \phpbb\event\data $event The event object
-	*/
-	public function esffs_manage_forums_initialise_data($event)
-	{
-		if ($event['action'] == 'add')
-		{
-			$forum_data = $event['forum_data'];
-			$forum_data['esffs_fid_enable'] = (bool) false;
-			$event['forum_data'] = $forum_data;
-		}
 	}
 
 	/**

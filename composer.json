@@ -2,20 +2,20 @@
     "name": "ganstaz/esffs",
     "type": "phpbb-extension",
     "description": "Exclude specified forum id/s from forum statistics",
-    "homepage": "http://www.dlsz.eu/",
-    "version": "1.0.4",
-    "time": "2021-02-22",
+    "homepage": "https://www.ganstaz.org/",
+    "version": "1.0.5",
+    "time": "2022-10-14",
     "license": "GPL-2.0-only",
     "authors": [
         {
             "name": "GanstaZ",
             "email": "ganstaz@hotmail.com",
-            "homepage": "http://www.dlsz.eu/",
+            "homepage": "https://www.ganstaz.org/",
             "role": "Lead Developer"
         }
     ],
     "require": {
-        "php": ">=7.2",
+        "php": ">=8.0",
         "composer/installers": "~1.0"
     },
     "extra": {

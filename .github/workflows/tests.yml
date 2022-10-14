@@ -19,11 +19,11 @@ on:
 jobs:
     # START Basic Checks Job (EPV, code sniffer, images check, etc.)
     basic-checks:
-        runs-on: ubuntu-18.04
+        runs-on: ubuntu-22.04
         strategy:
             matrix:
                 include:
-                    - php: '7.1'
+                    - php: '8.1'
                       db: "none"
                       NOTESTS: 1
 

@@ -1,15 +1,10 @@
-# phpBB extension Modify statistics
-
-## ABOUT
-
+# Exclude forums from statistics
 Exclude specified forum id/s from forum statistics.
 
 ## Installation
-### 1. clone
-Download/clone and move the repository into the folder phpBB3/ext/ganstaz/esffs:
+Download/clone and move the repository into the folder phpbb_root/ext/ganstaz/esffs
 
-### 2. activate
-Go to admin panel -> tab customise -> Manage extensions -> enable Modify statistics
+### Enable / Disable
+Go to admin panel / tab customise / Manage extensions -> enable / disable Exclude forums from statistics
 
-### 3. disable
-Go to admin panel -> tab customise -> Manage extensions -> disable Modify statistics
+[![Build Status](https://github.com/GanstaZ/esffs/workflows/Tests/badge.svg)](https://github.com/GanstaZ/esffs)

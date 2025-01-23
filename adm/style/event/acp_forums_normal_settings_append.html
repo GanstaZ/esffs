@@ -1,12 +1,7 @@
-<fieldset>
-	<legend>{{ lang('ACP_ESFFS_LEGEND') }}</legend>
-
-	<dl>
-		<dt><label for="esffs_fid_enable">{{ lang('ACP_ESFFS_EXCLUDE') ~ lang('COLON') }}</label><br><span>{{ lang('ACP_ESFFS_EXCLUDE_EXPLAIN') }}</span></dt>
-		<dd>
-			<label><input type="radio" class="radio" name="esffs_fid_enable" value="1" {% if S_ESFFS_FID %} checked="checked"{% endif %} /> {{ lang('YES') }}</label>
-			<label><input type="radio" class="radio" name="esffs_fid_enable" value="0" {% if not S_ESFFS_FID %} checked="checked"{% endif %} /> {{ lang('NO') }}</label>
-		</dd>
-	</dl>
-
-</fieldset>
+<dl>
+	<dt><label for="esffs_fid_enable">{{ lang('ACP_ESFFS_EXCLUDE') ~ lang('COLON') }}</label></dt>
+	<dd>
+		<label><input type="radio" class="radio" name="esffs_fid_enable" value="1"{% if S_ESFFS_FID %} checked="checked"{% endif %} /> {{ lang('YES') }}</label>
+		<label><input type="radio" class="radio" name="esffs_fid_enable" value="0"{% if not S_ESFFS_FID %} checked="checked"{% endif %} /> {{ lang('NO') }}</label>
+	</dd>
+</dl>

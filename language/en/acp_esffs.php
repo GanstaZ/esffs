@@ -19,7 +19,5 @@ if (empty($lang) || !is_array($lang))
 }
 
 $lang = array_merge($lang, [
-	'ACP_ESFFS_LEGEND'			=> 'Esffs settings',
-	'ACP_ESFFS_EXCLUDE'			=> 'Exclude forum',
-	'ACP_ESFFS_EXCLUDE_EXPLAIN' => 'Set <strong>Yes</strong> to exclude this forum from statistics.',
+	'ACP_ESFFS_EXCLUDE' => 'Exclude forum from statistics',
 ]);

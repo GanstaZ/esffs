@@ -70,6 +70,8 @@ class listener implements EventSubscriberInterface
 	*/
 	public function esffs_manage_forums_display_form($event): void
 	{
+		$this->language->add_lang('acp_esffs', 'ganstaz/esffs');
+
 		$template_data = $event['template_data'];
 		$template_data['S_ESFFS_FID'] = $event['forum_data']['esffs_fid_enable'];
 		$event['template_data'] = $template_data;

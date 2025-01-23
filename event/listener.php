@@ -97,11 +97,6 @@ class listener implements EventSubscriberInterface
 		}
 		$this->db->sql_freeresult($result);
 
-		if (!$hidden)
-		{
-			return;
-		}
-
 		// Update index specific vars
 		$this->template->assign_vars([
 			'TOTAL_POSTS'  => $this->language->lang('TOTAL_POSTS_COUNT', $hidden['posts']),

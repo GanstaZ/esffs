@@ -22,50 +22,32 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 */
 class listener implements EventSubscriberInterface
 {
-	/** @var config */
-	protected $config;
-
-	/** @var driver_interface */
-	protected $db;
-
-	/** @var language */
-	protected $language;
-
-	/** @var request */
-	protected $request;
-
-	/** @var template */
-	protected $template;
-
 	/**
-	* Constructor
-	*
 	* @param config			  $config	Config object
 	* @param driver_interface $db		Db object
 	* @param language		  $language Language object
 	* @param request		  $request	Request object
 	* @param template		  $template Template object
 	*/
-	public function __construct(config $config, driver_interface $db, language $language, request $request, template $template)
+	public function __construct(
+		protected config $config,
+		protected driver_interface $db,
+		protected language $language,
+		protected request $request,
+		protected template $template
+	)
 	{
-		$this->config	= $config;
-		$this->db		= $db;
-		$this->language = $language;
-		$this->request	= $request;
-		$this->template = $template;
 	}
 
 	/**
 	* Assign functions defined in this class to event listeners in the core
-	*
-	* @return array
 	*/
-	public static function getSubscribedEvents()
+	public static function getSubscribedEvents(): array
 	{
 		return [
 			'core.acp_manage_forums_request_data' => 'esffs_manage_forums_request_data',
 			'core.acp_manage_forums_display_form' => 'esffs_manage_forums_display_form',
-			'core.index_modify_page_title'		  => 'modify_stats',
+			'core.index_modify_page_title'		  => 'esffs_modify_stats',
 		];
 	}
 
@@ -74,7 +56,7 @@ class listener implements EventSubscriberInterface
 	*
 	* @param \phpbb\event\data $event The event object
 	*/
-	public function esffs_manage_forums_request_data($event)
+	public function esffs_manage_forums_request_data($event): void
 	{
 		$forum_data = $event['forum_data'];
 		$forum_data['esffs_fid_enable'] = $this->request->variable('esffs_fid_enable', 0);
@@ -86,7 +68,7 @@ class listener implements EventSubscriberInterface
 	*
 	* @param \phpbb\event\data $event The event object
 	*/
-	public function esffs_manage_forums_display_form($event)
+	public function esffs_manage_forums_display_form($event): void
 	{
 		$template_data = $event['template_data'];
 		$template_data['S_ESFFS_FID'] = $event['forum_data']['esffs_fid_enable'];
@@ -95,12 +77,10 @@ class listener implements EventSubscriberInterface
 
 	/**
 	* Event core.index_modify_page_title
-	*
-	* @param \phpbb\event\data $event The event object
 	*/
-	public function modify_stats($event)
+	public function esffs_modify_stats(): void
 	{
-		$sql = 'SELECT forum_id, forum_posts_approved, forum_topics_approved, esffs_fid_enable
+		$sql = 'SELECT forum_posts_approved, forum_topics_approved
 				FROM ' . FORUMS_TABLE . '
 				WHERE esffs_fid_enable = 1';
 		$result = $this->db->sql_query($sql);

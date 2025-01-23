@@ -3,25 +3,25 @@
     "type": "phpbb-extension",
     "description": "Exclude specified forum id/s from forum statistics",
     "homepage": "https://www.ganstaz.org/",
-    "version": "1.0.5",
-    "time": "2022-10-14",
+    "version": "2.0.0",
+    "time": "2025-01-23",
     "license": "GPL-2.0-only",
     "authors": [
         {
             "name": "GanstaZ",
             "email": "ganstaz@hotmail.com",
             "homepage": "https://www.ganstaz.org/",
-            "role": "Lead Developer"
+            "role": "GZO Development Team Lead"
         }
     ],
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.1",
         "composer/installers": "~1.0"
     },
     "extra": {
         "display-name": "Exclude forums from statistics",
         "soft-require": {
-            "phpbb/phpbb": ">=3.3"
+            "phpbb/phpbb": "4.0.0@dev"
         }
     }
 }

@@ -1,9 +1,9 @@
 <?php
 /**
 *
-* GanstaZ ESFFS. An extension for the phpBB Forum Software package.
+* An extension for the phpBB Forum Software package.
 *
-* @copyright (c) 2021, GanstaZ, http://www.github.com/GanstaZ/
+* @copyright (c) GanstaZ, https://www.github.com/GanstaZ/
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
